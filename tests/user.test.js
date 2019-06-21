@@ -1,27 +1,10 @@
 const request = require('supertest'); // Supertest uses this naming convention.
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose'); // Mongoose allows us to create our own Object ID.
 const app = require('../src/app');
 const User = require('../src/models/user');
-
-const userOneId = new mongoose.Types.ObjectId();
-
-// Create a user that's always in the database so that we can test functions like logging it.
-const userOne = {
-    _id: userOneId,
-    name: 'Sarah',
-    email: 'sarah@example.com',
-    password: 'example123',
-    tokens: [{
-        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-    }]
-}
+const { userOneId, userOne, setupDatabase } = require('./fixtures/db');
 
 // Wipes all users from database and creates a single user before running tests.
-beforeEach(async () => {
-    await User.deleteMany()
-    await new User(userOne).save()
-});
+beforeEach(setupDatabase);
 
 // Tests creating a user.
 test('Should signup a new user', async () => {
